@@ -1,41 +1,107 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+if (process.env.MODE_ENV !== "production"){
+    require("dotenv").config();
+}
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const logger = require('morgan');
+const nunjucks  = require('nunjucks');
+const bcrypt = require("bcrypt");
+const passport = require("passport");
+const flash = require("express-flash");
+const User = require("./models/user");
+const methodOverride = require("method-override");
+const xss = require("xss");
+const createError = require("http-errors");
 
-var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var indexRouter = require('./routes/index');
+
+const LocalStrategy = require("passport-local").Strategy;
 
 var app = express();
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'html');
+nunjucks.configure('views', {
+    autoescape: true,
+    cache: false,
+    express: app
+});
+
+let mongoDBUrl = process.env.DB_URL;
+mongoose.connect(mongoDBUrl,{useNewUrlParser: true });
+
+passport.use(new LocalStrategy({usernameField: "email"}, 
+    function(email, password, done) {
+        User.findOne({ email: xss(email) }, async function(err, user) {
+            if(user==null){
+                return done(null, false, {message: "Incorrect email or password."}); //chybný email
+            }
+            try{
+                if(await bcrypt.compare(password, user.password)){
+                    return done(null,user);
+                }else{
+                    return done(null,false, {message: "Incorrect email or password."}); //chybné heslo
+                }
+            }catch(e){
+                return done(e);
+            }
+        });
+    }
+));
+
+passport.serializeUser((user,done)=> done(null,user.id));
+passport.deserializeUser((id, done)=> {  
+    User.findOne({id: xss(id)}).then((user)=>{
+        done(null,user);
+    });
+});
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave:true,
+    saveUninitialized:false,
+    proxy: true,
+    cookie:{
+        secure:true,
+        httpOnly:true, 
+        sameSite:true
+    },
+    store: MongoStore.create({
+        mongoUrl:process.env.DB_URL
+    })
+}));
+app.use(function(req,res,next){
+    res.locals.session = req.session;
+    next();
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(methodOverride("_method"));
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(flash());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use("/", usersRouter);
+app.use("/", indexRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use((req,res,next)=>{
+    next(createError(404));
 });
-
-// error handler
+  
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    res.status(err.status || 500);
+    res.locals.message=err.message;
+    res.render('error.html',{err});
 });
-
+  
 module.exports = app;

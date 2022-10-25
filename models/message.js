@@ -2,7 +2,7 @@ const { ObjectId } = require("bson");
 const mongoose = require("mongoose");
 
 let MessageSchema = new mongoose.Schema({
-    send: {
+    sender: {
         type: ObjectId,
         ref: "User",
         required: true

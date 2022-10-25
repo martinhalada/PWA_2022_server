@@ -54,6 +54,23 @@ passport.use(new LocalStrategy({usernameField: "email"},
     }
 ));
 
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave:true,
+    saveUninitialized:true,
+    proxy: true,
+    //cookie:{
+    //    secure:true,
+    //    httpOnly:true, 
+    //    sameSite:true
+    //},
+    store: MongoStore.create({
+        mongoUrl:process.env.DB_URL
+    })
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 passport.serializeUser((user,done)=> done(null,user.id));
 passport.deserializeUser((id, done)=> {  
     User.findOne({id: xss(id)}).then((user)=>{
@@ -61,27 +78,11 @@ passport.deserializeUser((id, done)=> {
     });
 });
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave:true,
-    saveUninitialized:false,
-    proxy: true,
-    cookie:{
-        secure:true,
-        httpOnly:true, 
-        sameSite:true
-    },
-    store: MongoStore.create({
-        mongoUrl:process.env.DB_URL
-    })
-}));
 app.use(function(req,res,next){
     res.locals.session = req.session;
     next();
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(methodOverride("_method"));
 
 app.use(logger('dev'));

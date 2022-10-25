@@ -12,6 +12,21 @@
         <form action="/logout?_method=DELETE" method="POST">
             <button type="submit" class="btn btn-primary">Odhlásit se</button>
         </form>
+
+        <div id="chat">
+            <div id="listOfUsersDiv">
+                <ul id="listOfUsers">
+                    {% for user in allUsers %}
+                        <li>
+                            <label>{{user.username}}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="listOfMessages">
+
+            </div>
+        </div>
         
     </body>
 </html>

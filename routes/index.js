@@ -6,7 +6,7 @@ router.get("/", function(req,res){
     res.redirect("/index");
 });
 
-router.get("/index", chatController.getMainPage);
+router.get("/index", checkAuthenticated, chatController.getMainPage);
 
 function checkAuthenticated(req,res,next){
     if(req.isAuthenticated()){

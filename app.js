@@ -54,16 +54,17 @@ passport.use(new LocalStrategy({usernameField: "email"},
     }
 ));
 
+// https://stackoverflow.com/questions/40324121/express-session-secure-true
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave:true,
     saveUninitialized:true,
     proxy: true,
-    //cookie:{
+    cookie:{
     //    secure:true,
-    //    httpOnly:true, 
-    //    sameSite:true
-    //},
+        httpOnly:true, 
+        sameSite:true
+    },
     store: MongoStore.create({
         mongoUrl:process.env.DB_URL
     })

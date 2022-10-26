@@ -2,12 +2,12 @@
 <html lang="cs"> 
     <head>
         <meta charset="utf-8">
-        <title>New account</title>
+        <title>Registrace</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="/style.css" />
     </head>
     <body>
-        <h1>Create new account</h1>
+        <h1>Vytvořit nový účet</h1>
         
         {% if message %}
             {{message}}
@@ -15,9 +15,9 @@
 
         <form class="form-horizontal" action="/register" method="POST">
             <div class="form-group form-inline">
-                <label for="name" class="col-sm-1 control-label">Name</label>
+                <label for="name" class="col-sm-1 control-label">Jméno</label>
                 <div class="col-sm-5">
-                    <input type="text" class="form-control" id="name" name="name" required placeholder="Name">
+                    <input type="text" class="form-control" id="name" name="name" required placeholder="Jméno">
                 </div>
             </div>
             <div class="form-group form-inline">
@@ -27,19 +27,19 @@
                 </div>
             </div>
             <div class="form-group form-inline">
-                <label for="password" class="col-sm-1 control-label">Password</label>
+                <label for="password" class="col-sm-1 control-label">Heslo</label>
                 <div class="col-sm-5">
-                    <input type="password" class="form-control" id="password" name="password" required placeholder="Password">
+                    <input type="password" class="form-control" id="password" name="password" required placeholder="Heslo">
                 </div>
             </div>
             <div class="form-group form-inline">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-success">Sign up</button>           
+                    <button type="submit" class="btn btn-success">Zaregistrovat</button>           
                 </div>
             </div>
             <div class="form-group form-inline">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <a href="/login" class="btn btn-primary" role="button">Login</a>
+                    <a href="/login" class="btn btn-primary" role="button">Přihlásit se</a>
                 </div>
             </div>
         </form>     

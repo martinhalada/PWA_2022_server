@@ -10,7 +10,7 @@ exports.getRegister = function(req, res){
 exports.postRegister = async function(req, res){
     User.findOne({ email: xss(req.body.email) }, async function(err, data) {
         if(data){
-            return res.render("register.html", {message: "This user already exists."});
+            return res.render("register.html", {message: "Tento uživatel již existuje."});
         }
         try{
             const hashedPassword = await bcrypt.hash(xss(req.body.password), 10);
@@ -22,7 +22,7 @@ exports.postRegister = async function(req, res){
             }
             User(newUser).save(function(err, data){
                 if(err){
-                    return res.render("register.html", {message: "Database error."});
+                    return res.render("register.html", {message: "Chyba databáze."});
                 }
                 res.redirect("/login");
             });
@@ -43,7 +43,7 @@ exports.postLogin = passport.authenticate("local", {
 });
 
 exports.logout = function(req, res){
-    req.logout(function(err) {
+    req.session.destroy(function(err) {
         if (err){
             return next(err);
         }

@@ -2,29 +2,41 @@
 <html lang="cs">
     <head>
         <meta charset="utf-8">
-        <title>Chat application</title>
+        <title>PWA Chat App</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="/style.css" />
     </head>
     <body>
-        <h1>Chat</h1>
-
-        <form action="/logout?_method=DELETE" method="POST">
-            <button type="submit" class="btn btn-primary">Odhlásit se</button>
-        </form>
+        <div id="main_options">
+            <h1>Chat</h1>
+            <h2>Přihlášený uživatel: {{currentUser}}</h2>
+            <form action="/logout?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-primary">Odhlásit se</button>
+            </form>
+        </div>
 
         <div id="chat">
             <div id="listOfUsersDiv">
                 <ul id="listOfUsers">
                     {% for user in allUsers %}
                         <li>
-                            <label>{{user.username}}</label>
+                            <a href="chat/{{currentUserId}}/{{user.id}}">{{user.username}}</a>
                         </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div id="listOfMessages">
-
+            <div id="listOfMessagesDiv">
+                <ul id="listOfMessages">
+                        <li>
+                            <label>Test zpráva</label>
+                        </li>
+                </ul>
+                <div id="sendDiv">
+                    <form id="send_form" action="/" method="GET">
+                        <input id="message-input" type="text" placeholder="Sem napiš zprávu" required />
+                        <button type="submit" class="btn btn-success">Odeslat</button>
+                    </form>
+                </div>
             </div>
         </div>
         

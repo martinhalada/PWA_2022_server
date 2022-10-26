@@ -1,6 +1,60 @@
-body{
+html, body {
     background:white;
-    padding:20px;
+    padding: 5px;
+    margin: 0;
     color: black;
     font-family: verdana;
-  }
+}
+
+#main_options {
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+
+#chat {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 120px) !important;
+}
+
+#listOfUsersDiv {
+    float: left;
+    width: 25%;
+    overflow: scroll;
+    overflow-x:hidden;
+}
+
+#listOfMessagesDiv {
+    float: right;
+    width: 75%;
+    overflow: scroll;
+    overflow-x:hidden;
+    height: calc(100vh - 170px);
+}
+
+#sendDiv {
+    position: fixed;
+    bottom: 10px;
+}
+
+input[type="text"] {
+    margin: 0;
+    font-size: 18px;
+    line-height: 18px;
+    height: 50px;
+    width: calc(100vw - 25vw - 100px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 16px;
+    font-family: Lato, sans-serif;
+    color: #888;
+}
+
+input[type="text"]:focus {
+    color: #333;
+}

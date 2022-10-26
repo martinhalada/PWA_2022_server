@@ -39,13 +39,13 @@ passport.use(new LocalStrategy({usernameField: "email"},
     function(email, password, done) {
         User.findOne({ email: xss(email) }, async function(err, user) {
             if(user==null){
-                return done(null, false, {message: "Incorrect email or password."}); //chybný email
+                return done(null, false, {message: "Chybné jméno nebo heslo."}); //chybný email
             }
             try{
                 if(await bcrypt.compare(password, user.password)){
                     return done(null,user);
                 }else{
-                    return done(null,false, {message: "Incorrect email or password."}); //chybné heslo
+                    return done(null,false, {message: "Chybné jméno nebo heslo."}); //chybné heslo
                 }
             }catch(e){
                 return done(e);
@@ -58,7 +58,7 @@ passport.use(new LocalStrategy({usernameField: "email"},
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave:true,
-    saveUninitialized:true,
+    saveUninitialized:false,
     proxy: true,
     cookie:{
     //    secure:true,

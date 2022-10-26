@@ -13,7 +13,7 @@ function checkAuthentication(req, res, next){
 
 function validateLengthOfPassword(req, res, next){
     if (xss(req.body.password).length < 12){
-        return res.render("register.html", { message: "Password must be at least 12 character long."});
+        return res.render("register.html", { message: "Heslo musí mít alespoň 12 znaků."});
     }
     next();
 };

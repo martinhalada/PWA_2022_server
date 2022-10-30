@@ -28,12 +28,38 @@ html, body {
     overflow-x:hidden;
 }
 
+ul {
+    list-style-type: none;
+}
+
+li.right {
+    text-align: right;
+    padding-right: 30px;
+}
+
+li.left {
+    text-align: left;
+}
+
+li.online::before{
+    content: "\2022";
+    color: green;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em
+}
+
 #listOfMessagesDiv {
     float: right;
     width: 75%;
     overflow: scroll;
     overflow-x:hidden;
-    height: calc(100vh - 170px);
+    height: calc(100vh - 200px);
+}
+
+#statusDiv {
+    position: fixed;
+    bottom: 50px;
 }
 
 #sendDiv {

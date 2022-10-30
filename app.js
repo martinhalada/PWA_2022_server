@@ -17,12 +17,39 @@ const methodOverride = require("method-override");
 const xss = require("xss");
 const createError = require("http-errors");
 
-var usersRouter = require('./routes/users');
-var indexRouter = require('./routes/index');
-
 const LocalStrategy = require("passport-local").Strategy;
 
 var app = express();
+const http = require('http');
+const server = http.createServer(app);
+const {Server} = require("socket.io");
+let io = new Server(server);
+
+const users = {};
+io.on("connection", (socket) => {
+    socket.on("isOnline", function(data) {
+        console.log('user connected: ' + data);
+        users[socket.id] = data;
+        io.sockets.emit("isOnline", users);
+    });   
+
+    socket.on("chat", function(data){
+        io.sockets.emit("chat", data);
+    });
+
+    socket.on("typing", function(data){
+        socket.broadcast.emit("typing", data);
+    });
+
+    socket.on('disconnect', function(data){
+        console.log('user disconnected: ' + users[socket.id]);
+        delete users[socket.id];
+        io.sockets.emit("isOnline", users);
+    });
+});
+
+var usersRouter = require('./routes/users');
+var indexRouter = require('./routes/index');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
@@ -104,6 +131,10 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.locals.message=err.message;
     res.render('error.html',{err});
+});
+
+server.listen(3000, () => {
+    console.log('listening on *:3000');
 });
   
 module.exports = app;

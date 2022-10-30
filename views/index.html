@@ -26,19 +26,18 @@
                 </ul>
             </div>
             <div id="listOfMessagesDiv">
-                <ul id="listOfMessages">
-                        <li>
-                            <label>Test zpráva</label>
-                        </li>
-                </ul>
+                <ul id="listOfMessages"></ul>
+                <div id="statusDiv"></div>
                 <div id="sendDiv">
-                    <form id="send_form" action="/" method="GET">
-                        <input id="message-input" type="text" placeholder="Sem napiš zprávu" required />
-                        <button type="submit" class="btn btn-success">Odeslat</button>
+                    <form id="send_form" action="">
+                        <input id="message-input" type="text" placeholder="Sem napiš zprávu" data-currentUser={{currentUser}} required />
+                        <button id="send_btn" class="btn btn-success">Odeslat</button>
                     </form>
                 </div>
             </div>
         </div>
         
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/index-WS.js"></script>
     </body>
 </html>

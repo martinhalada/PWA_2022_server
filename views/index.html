@@ -20,20 +20,34 @@
                 <ul id="listOfUsers">
                     {% for user in allUsers %}
                         <li>
-                            <a href="chat/{{currentUserId}}/{{user.id}}">{{user.username}}</a>
+                            <a href="/index/chat/{{user.id}}">{{user.username}}</a>
                         </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div id="listOfMessagesDiv">
-                <ul id="listOfMessages"></ul>
-                <div id="statusDiv"></div>
-                <div id="sendDiv">
-                    <form id="send_form" action="">
-                        <input id="message-input" type="text" placeholder="Sem napiš zprávu" data-currentUser={{currentUser}} required />
-                        <button id="send_btn" class="btn btn-success">Odeslat</button>
-                    </form>
-                </div>
+            <div id="listOfMessagesDiv" >
+                {% if messagesDivAttr %}
+                    <ul id="listOfMessages">
+                        {% for message in messages %}
+                            {% if message.sender == currentUser %}
+                                <li class="right">
+                                    <label>{{message.sender}}: {{message.message}}</label>
+                                </li>
+                            {% else %}
+                                <li class="left">
+                                    <label>{{message.sender}}: {{message.message}}</label>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <div id="statusDiv"></div>
+                    <div id="sendDiv">
+                        <form id="send_form" action="">
+                            <input id="message-input" type="text" placeholder="Sem napiš zprávu" data-currentUser={{currentUser}} data-currentUserId={{currentUserId}} required />
+                            <button id="send_btn" class="btn btn-success">Odeslat</button>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
         </div>
         

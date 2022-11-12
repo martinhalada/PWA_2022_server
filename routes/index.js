@@ -7,6 +7,7 @@ router.get("/", function(req,res){
 });
 
 router.get("/index", checkAuthenticated, chatController.getMainPage);
+router.get("/index/chat/:id", checkAuthenticated, chatController.getChat);
 
 function checkAuthenticated(req,res,next){
     if(req.isAuthenticated()){

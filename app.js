@@ -25,6 +25,8 @@ const server = http.createServer(app);
 const {Server} = require("socket.io");
 let io = new Server(server);
 
+const chatController = require("./controllers/chatController"); 
+
 const users = {};
 io.on("connection", (socket) => {
     socket.on("isOnline", function(data) {
@@ -34,6 +36,8 @@ io.on("connection", (socket) => {
     });   
 
     socket.on("chat", function(data){
+        console.log("message is: " + data.message);
+        chatController.saveNewMessage(data.message, data.send_user);
         io.sockets.emit("chat", data);
     });
 

@@ -9,15 +9,20 @@ let messages_list = document.getElementById("listOfMessages");
 let users_list = document.getElementById("listOfUsers");
 
 let currentUser = message_input.getAttribute("data-currentUser");
+let currentUserId = message_input.getAttribute("data-currentUserId");
+let url = window.location.href.split("/");
+let secondUserId = url.at(-1);
+console.log(currentUserId, secondUserId);
 socket.emit("isOnline", currentUser);
+socket.on()
 
 // emit events
 send_form.addEventListener("submit", function(e) {
-    e.preventDefault();
     socket.emit("chat", {
         message: message_input.value,
         send_user: currentUser
     });
+    e.preventDefault();
     message_input.value = "";
 });
 

@@ -4,26 +4,21 @@ const xss = require("xss");
 var shortid = require('shortid');
 const Message = require("../models/message");
 
-exports.getMainPage = function(req, res, next){
-    console.log(req.session.passport);
-    console.log(req.user);
-    const data = User.find({ id: { $ne: xss(req.user.id) } }, function(err, data){
-        if (err) {
-            return res.render("error.html", { message: "Chyba databáze."});
-        }
-        return res.render("index.html", { allUsers: data, 
-                                        currentUser: req.user.username, 
-                                        currentUserId: req.user.id,
-                                        messagesDivAttr: false });
-    });
+exports.getMainPage = async function(req, res, next){
+    const allUsers = await User.find({ username: { $ne: xss(req.user.username) } });
+    const allChats = await ChatRoom.find({ users: {$all: [req.user.username]}});
+    return res.render("index.html", { allUsers: allUsers, 
+                                    allChats: allChats,
+                                    currentUser: req.user.username, 
+                                    currentUserId: req.user.id,
+                                    messagesDivAttr: false });
+
 };
 
 let currentChatRoomId;
-exports.getChat = async function(req, res, next){
-    let currentUser = xss(req.user.id);
+exports.createChat = async function(req, res, next){
+    let currentUser = xss(req.user.username);
     let secondUser = xss(req.params.id);
-    console.log(currentUser, secondUser);
-    const allUsers = await User.find({ id: { $ne: xss(req.user.id) } });
     const chatRoomId = await ChatRoom.find({ users : {$all: [currentUser, secondUser], $size: 2}});
     if (chatRoomId.length === 0){
         currentChatRoomId = shortid.generate()
@@ -37,9 +32,19 @@ exports.getChat = async function(req, res, next){
     } else {
         currentChatRoomId = chatRoomId[0].id;
     }
-    const messagesFromChatRoom = await Message.find({ chat: currentChatRoomId});
+    res.redirect("/index/chat/"+currentChatRoomId);
+};
 
+exports.getChat = async function(req, res, next){
+    let chatId = xss(req.params.id);
+    let currentUser = xss(req.user.username);
+    const allUsers = await User.find({ username: { $ne: currentUser } });
+    
+    const messagesFromChatRoom = await Message.find({ chat: chatId});
+    const allChats = await ChatRoom.find({ users: {$all: [currentUser]}});
+    
     return res.render("index.html", { allUsers: allUsers, 
+        allChats: allChats,
         currentUser: req.user.username, 
         currentUserId: req.user.id,
         messagesDivAttr: true,

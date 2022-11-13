@@ -18,7 +18,8 @@ html, body {
 #chat {
     display: flex;
     flex-direction: row;
-    height: calc(100vh - 120px) !important;
+    padding-top: 10px;
+    height: calc(100vh - 160px) !important;
 }
 
 #listOfUsersDiv {
@@ -26,6 +27,14 @@ html, body {
     width: 25%;
     overflow: scroll;
     overflow-x:hidden;
+}
+
+#listOfChatsDiv {
+    float: left;
+    width: 25%;
+    overflow: scroll;
+    overflow-x:hidden;
+    display: none;
 }
 
 ul {

@@ -7,17 +7,37 @@ let send_form = document.getElementById("send_form");
 let message_input = document.getElementById("message-input");
 let messages_list = document.getElementById("listOfMessages");
 let users_list = document.getElementById("listOfUsers");
+let users_btn = document.getElementById("usersBtn");
+let chat_btn = document.getElementById("chatBtn");
+let listOfUsersDiv = document.getElementById("listOfUsersDiv");
+let listOfChatsDiv = document.getElementById("listOfChatsDiv");
 
-let currentUser = message_input.getAttribute("data-currentUser");
-let currentUserId = message_input.getAttribute("data-currentUserId");
+let currentUser = main_options.getAttribute("data-currentUser");
 let url = window.location.href.split("/");
-let secondUserId = url.at(-1);
-console.log(currentUserId, secondUserId);
+
+chat_btn.addEventListener("click", function(e) {
+    toggleUsersChat();
+});
+
+users_btn.addEventListener("click", function(e) {
+    toggleUsersChat();
+});
+
+function toggleUsersChat(){
+    if (listOfChatsDiv.style.display === "none"){
+        listOfChatsDiv.style.display = "block";
+        listOfUsersDiv.style.display = "none";
+    } else {
+        listOfChatsDiv.style.display = "none";
+        listOfUsersDiv.style.display = "block";
+    }
+}
+
 socket.emit("isOnline", currentUser);
 socket.on()
 
 // emit events
-send_form.addEventListener("submit", function(e) {
+send_form && send_form.addEventListener("submit", function(e) {
     socket.emit("chat", {
         message: message_input.value,
         send_user: currentUser
@@ -27,7 +47,7 @@ send_form.addEventListener("submit", function(e) {
 });
 
 is_user_typing = false;
-message_input.addEventListener("keypress", function(){
+message_input && message_input.addEventListener("keypress", function(){
     if (is_user_typing == false) {
         socket.emit("typing", currentUser);
         is_user_typing = true;

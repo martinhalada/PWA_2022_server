@@ -14,6 +14,7 @@ let listOfChatsDiv = document.getElementById("listOfChatsDiv");
 
 let currentUser = main_options.getAttribute("data-currentUser");
 let url = window.location.href.split("/");
+let currentChatRoom = url.at(-1);
 
 chat_btn.addEventListener("click", function(e) {
     toggleUsersChat();
@@ -33,14 +34,18 @@ function toggleUsersChat(){
     }
 }
 
-socket.emit("isOnline", currentUser);
+socket.emit("isOnline", {
+    currentUser: currentUser,
+    chatRoom: currentChatRoom
+});
 socket.on()
 
 // emit events
 send_form && send_form.addEventListener("submit", function(e) {
     socket.emit("chat", {
         message: message_input.value,
-        send_user: currentUser
+        send_user: currentUser,
+        chatRoom: currentChatRoom
     });
     e.preventDefault();
     message_input.value = "";
@@ -49,7 +54,10 @@ send_form && send_form.addEventListener("submit", function(e) {
 is_user_typing = false;
 message_input && message_input.addEventListener("keypress", function(){
     if (is_user_typing == false) {
-        socket.emit("typing", currentUser);
+        socket.emit("typing", {
+            currentUser: currentUser,
+            chatRoom: currentChatRoom
+        });
         is_user_typing = true;
         clearStatus();
     }
@@ -58,8 +66,11 @@ message_input && message_input.addEventListener("keypress", function(){
 function clearStatus() {
     setTimeout(function() {
         is_user_typing = false;
-        socket.emit("typing", "");
-    }, 10000);
+        socket.emit("typing", {
+            currentUser: "",
+            chatRoom: currentChatRoom
+        });
+    }, 5000);
 }
 
 // listen for events
@@ -72,8 +83,9 @@ socket.on("chat", function(data) {
 });
 
 socket.on("typing", function(data) {
-    if (data != "") {
-        status_text.innerHTML = "<p>" + data + " píše zprávu...</p>";
+    if (data.currentUser != "") {
+        
+        status_text.innerHTML = "<p>" + data.currentUser + " píše zprávu...</p>";
     } else{
         status_text.innerHTML = "";
     }

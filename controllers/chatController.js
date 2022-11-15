@@ -60,6 +60,6 @@ exports.saveNewMessage = function(message, user){
         time: Date.now()
     };
     let newMessage = Message(newItem).save(function(err,data){
-        if(err) return res.render("error.html", {message: "Chyba databáze"});
+        if(err) console.log("Chyba databáze");
     });
 };

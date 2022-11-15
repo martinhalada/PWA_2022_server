@@ -30,19 +30,21 @@ const chatController = require("./controllers/chatController");
 const users = {};
 io.on("connection", (socket) => {
     socket.on("isOnline", function(data) {
-        console.log('user connected: ' + data);
-        users[socket.id] = data;
+        console.log('user connected: ' + data.currentUser);
+        users[socket.id] = data.currentUser;
+        socket.join(data.chatRoom);
         io.sockets.emit("isOnline", users);
     });   
 
     socket.on("chat", function(data){
         console.log("message is: " + data.message);
         chatController.saveNewMessage(data.message, data.send_user);
-        io.sockets.emit("chat", data);
+        console.log(data.chatRoom);
+        io.sockets.to(data.chatRoom).emit("chat", data);
     });
 
     socket.on("typing", function(data){
-        socket.broadcast.emit("typing", data);
+        socket.broadcast.to(data.chatRoom).emit("typing", data);
     });
 
     socket.on('disconnect', function(data){

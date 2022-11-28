@@ -6,9 +6,12 @@ router.get("/", function(req,res){
     res.redirect("/index");
 });
 
-router.get("/index", checkAuthenticated, chatController.getMainPage);
-router.get("/index/user/:id", checkAuthenticated, chatController.createChat);
-router.get("/index/chat/:id", checkAuthenticated, chatController.getChat);
+router.get("/allUsers/:currentUser", chatController.getAllUsers);
+router.post("/createChatRoom", chatController.createChat);
+router.get("/allChats/:currentUser", chatController.getAllChats);
+router.get("/chat/:id", chatController.getAllMessages);
+
+router.get("/index", chatController.getMainPage);
 
 function checkAuthenticated(req,res,next){
     if(req.isAuthenticated()){

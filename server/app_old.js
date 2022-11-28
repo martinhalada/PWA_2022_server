@@ -4,20 +4,18 @@ if (process.env.MODE_ENV !== "production"){
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const bodyParser = require("body-parser")
 const mongoose = require("mongoose");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const logger = require('morgan');
-const nunjucks  = require('nunjucks');
-const bcrypt = require("bcrypt");
 const passport = require("passport");
-const flash = require("express-flash");
 const User = require("./models/user");
 const methodOverride = require("method-override");
-const xss = require("xss");
 const createError = require("http-errors");
 
 const LocalStrategy = require("passport-local").Strategy;
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
+require("./authenticate");
 
 var app = express();
 const http = require('http');
@@ -57,60 +55,40 @@ io.on("connection", (socket) => {
 var usersRouter = require('./routes/users');
 var indexRouter = require('./routes/index');
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
-nunjucks.configure('views', {
-    autoescape: true,
-    cache: false,
-    express: app
-});
 
 let mongoDBUrl = process.env.DB_URL;
-mongoose.connect(mongoDBUrl,{useNewUrlParser: true });
+const connect = mongoose.connect(mongoDBUrl,{useNewUrlParser: true });
+connect.then(db => {
+    console.log("Connected to db.");
+}).catch(err => {
+    console.log(err);
+});
 
-passport.use(new LocalStrategy({usernameField: "email"}, 
-    function(email, password, done) {
-        User.findOne({ email: xss(email) }, async function(err, user) {
-            if(user==null){
-                return done(null, false, {message: "Chybné jméno nebo heslo."}); //chybný email
-            }
-            try{
-                if(await bcrypt.compare(password, user.password)){
-                    return done(null,user);
-                }else{
-                    return done(null,false, {message: "Chybné jméno nebo heslo."}); //chybné heslo
-                }
-            }catch(e){
-                return done(e);
-            }
-        });
-    }
-));
+passport.use(new LocalStrategy(User.authenticate()));
+
+const opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
+opts.secretOrKey = process.env.JWT_SECRET
+passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ _id: jwt_payload._id }, function (err, user) {
+        if (err) {
+            return done(err, false)
+        }
+        if (user) {
+            return done(null, user)
+        } else {
+            return done(null, false)
+        }
+    });
+}));
 
 // https://stackoverflow.com/questions/40324121/express-session-secure-true
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave:true,
-    saveUninitialized:false,
-    proxy: true,
-    cookie:{
-    //    secure:true,
-        httpOnly:true, 
-        sameSite:true
-    },
-    store: MongoStore.create({
-        mongoUrl:process.env.DB_URL
-    })
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(bodyParser.json())
+app.use(cookieParser(process.env.SESSION_SECRET))
 
-passport.serializeUser((user,done)=> done(null,user.id));
-passport.deserializeUser((id, done)=> {  
-    User.findOne({id: xss(id)}).then((user)=>{
-        done(null,user);
-    });
-});
+app.use(passport.initialize());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req,res,next){
     res.locals.session = req.session;
@@ -122,8 +100,6 @@ app.use(methodOverride("_method"));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(flash());
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/", usersRouter);
@@ -136,11 +112,11 @@ app.use((req,res,next)=>{
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.locals.message=err.message;
-    res.render('error.html',{err});
+    res.send(err)
 });
 
-server.listen(3000, () => {
-    console.log('listening on *:3000');
+server.listen(3001, () => {
+    console.log('listening on *:3001');
 });
   
 module.exports = app;

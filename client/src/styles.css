@@ -14,12 +14,15 @@ html, body {
     justify-content: space-between;
 }
 
+#logout_btn {
+    height: 50px;
+}
 
 #chat {
     display: flex;
     flex-direction: row;
     padding-top: 10px;
-    height: calc(100vh - 160px) !important;
+    height: calc(100vh - 230px) !important;
 }
 
 #listOfUsersDiv {
@@ -52,7 +55,6 @@ li.left {
 
 li.online::before{
     content: "\2022";
-    color: green;
     display: inline-block; 
     width: 1em;
     margin-left: -1em
@@ -63,7 +65,7 @@ li.online::before{
     width: 75%;
     overflow: scroll;
     overflow-x:hidden;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 240px);
 }
 
 #statusDiv {

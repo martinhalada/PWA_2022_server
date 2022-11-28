@@ -5,7 +5,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 const ChatUsers = (props) => {
     const [users, setUsers] = useState([]);
 
-    
     useEffect(() => {
         const fetchData = () => {
             fetch(process.env.REACT_APP_API_ENDPOINT + "/allUsers/" + props.username, {
@@ -29,9 +28,33 @@ const ChatUsers = (props) => {
             withCredentials: true,
             credentials: "include",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({currentUser: props.username, secondUser: username})
+            body: JSON.stringify({ currentUser: props.username, secondUser: username })
         })
     }
+
+    // listen for events
+    useEffect(() => {
+        props.socket.on("isOnline", function (data) {
+            if (!document.getElementById("listOfUsers")) return;
+            let users_list = document.getElementById("listOfUsers");
+            if (users_list.childNodes.length == 0) return;
+            const elems = users_list.getElementsByTagName("li");
+            for (let elem of elems) {
+                let uName = elem.id;
+                let found = false;
+                for (const [key, value] of Object.entries(data)) {
+                    if (uName == value) {
+                        elem.setAttribute("class", "online");
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    elem.setAttribute("class", "offline");
+                }
+            }
+        });
+    }, [props.socket]);
 
     return (
         <div id="listOfUsersDiv" >
@@ -39,7 +62,7 @@ const ChatUsers = (props) => {
             {users.length > 0 && (
                 <ul id="listOfUsers">
                     {users.map(user => (
-                        <li key={user.username} onClick={() => userClicked(user.username)}>
+                        <li id={user.username} key={user.username} onClick={() => userClicked(user.username)}>
                             {user.firstName} {user.lastName}
                         </li>
                     ))}

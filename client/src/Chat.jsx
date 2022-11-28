@@ -6,6 +6,7 @@ import ChatChats from "./ChatChats"
 import { FaUsers, FaComments } from 'react-icons/fa';
 import ChatMessages from "./ChatMessages"
 import socketIO from "socket.io-client"
+import ChatGroupChats from "./ChatGroupChats"
 
 const socket = socketIO.connect("http://localhost:3001");
 export const Chat = () => {
@@ -120,7 +121,7 @@ export const Chat = () => {
             </div>
             <div id="chat">
                 {usersOrChats === "users" && (
-                    <ChatUsers username={userContext.details.username} />
+                    <ChatUsers socket={socket} username={userContext.details.username} />
                 )}
                 {usersOrChats === "chats" && (
                     <ChatChats username={userContext.details.username} currentChat={handleCurrentChat} />
@@ -129,7 +130,7 @@ export const Chat = () => {
                     <ChatMessages socket={socket} username={userContext.details.username} chatId={currentChat} />
                 )}
                 {messagesOrGroup === "group" && (
-                    <p>Group chat options</p>
+                    <ChatGroupChats username={userContext.details.username} />
                 )}
 
             </div>

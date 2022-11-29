@@ -10,6 +10,7 @@ router.get("/allUsers/:currentUser", chatController.getAllUsers);
 router.post("/createChatRoom", chatController.createChat);
 router.get("/allChats/:currentUser", chatController.getAllChats);
 router.get("/chat/:id", chatController.getAllMessages);
+router.post("/groupChat", chatController.createGroupChat);
 
 router.get("/index", chatController.getMainPage);
 

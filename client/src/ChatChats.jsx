@@ -39,6 +39,9 @@ const ChatChats = (props) => {
                             {chat.users.length === 2 && chat.users[0] !== props.username && (
                                 chat.users[0]
                             )}
+                            {chat.users.length > 2 && chat.users[0] !== props.username && (
+                                "groupChat"
+                            )}
                         </li>
                     ))}
                 </ul>

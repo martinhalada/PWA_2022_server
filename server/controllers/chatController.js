@@ -63,3 +63,19 @@ exports.saveNewMessage = function(message, user, chatRoom){
         if(err) console.log("Chyba databáze");
     });
 };
+
+exports.createGroupChat = async function(req, res, next){
+    let selectedUsers = xss(req.body.users).split(",");
+
+    const chatRoomId = await ChatRoom.find({ users : {$all: selectedUsers, $size: selectedUsers.length}});
+    if (chatRoomId.length === 0){
+        let currentChatRoomId = shortid.generate()
+        let newChatRoomItem = {
+            id: currentChatRoomId,
+            users: selectedUsers
+        };
+        let newChatRoom = ChatRoom(newChatRoomItem).save(function(err,data){
+            if(err) return res.send({message: "Chyba databáze"});
+        });    
+    }
+};

@@ -14,13 +14,14 @@ export const Chat = () => {
     const [usersOrChats, setUsersOrChats] = useState("users");
     const [messagesOrGroup, setMessagesOrGroup] = useState("messages");
     const [currentChat, setCurrentChat] = useState("");
+    const [usersOnline, setUsersOnline] = useState(null);
 
     useEffect(() => {
         if (userContext.details) {
             socket.emit("isOnline", {
                 currentUser: userContext.details.username
             });
-            socket.on()
+            //socket.on()
         }
     }, [userContext.details]);
 
@@ -97,6 +98,13 @@ export const Chat = () => {
 
     const handleCurrentChat = (currentChatId) => {
         setCurrentChat(currentChatId);
+        socket.emit("joinRoom", {
+            chatRoom: currentChatId
+        });
+    }
+
+    const handleUsersOnline = (onlineUsers) => {
+        setUsersOnline(onlineUsers);
     }
 
     return userContext.details === null ? (
@@ -121,7 +129,7 @@ export const Chat = () => {
             </div>
             <div id="chat">
                 {usersOrChats === "users" && (
-                    <ChatUsers socket={socket} username={userContext.details.username} />
+                    <ChatUsers socket={socket} username={userContext.details.username} usersOnline={handleUsersOnline} isOnline={usersOnline} />
                 )}
                 {usersOrChats === "chats" && (
                     <ChatChats username={userContext.details.username} currentChat={handleCurrentChat} />

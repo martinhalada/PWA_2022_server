@@ -58,18 +58,19 @@ io.on("connection", (socket) => {
     socket.on("isOnline", function(data) {
         console.log('user connected: ' + data.currentUser);
         users[socket.id] = data.currentUser;
-        //socket.join(data.chatRoom);
         io.sockets.emit("isOnline", users);
-    });   
+    });
+
+    socket.on("joinRoom", function(data) {
+      socket.join(data.chatRoom);
+    });
 
     socket.on("chat", function(data){
         chatController.saveNewMessage(data.message, data.send_user, data.chatRoom);
-        socket.join(data.chatRoom);
         io.sockets.to(data.chatRoom).emit("chat", data);
     });
 
     socket.on("typing", function(data){
-        socket.join(data.chatRoom);
         socket.broadcast.to(data.chatRoom).emit("typing", data);
     });
 

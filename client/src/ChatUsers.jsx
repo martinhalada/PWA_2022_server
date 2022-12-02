@@ -7,7 +7,7 @@ const ChatUsers = (props) => {
 
     useEffect(() => {
         const fetchData = () => {
-            fetch(process.env.REACT_APP_API_ENDPOINT + "/allUsers/" + props.username, {
+            fetch(process.env.REACT_APP_API_ENDPOINT + "/user/allUsers/" + props.username, {
                 method: "GET",
                 withCredentials: true,
                 credentials: "include",
@@ -23,7 +23,7 @@ const ChatUsers = (props) => {
     }, [props]);
 
     const userClicked = username => {
-        fetch(process.env.REACT_APP_API_ENDPOINT + "/createChatRoom", {
+        fetch(process.env.REACT_APP_API_ENDPOINT + "/chat/createChatRoom", {
             method: "POST",
             withCredentials: true,
             credentials: "include",
@@ -61,11 +61,9 @@ const ChatUsers = (props) => {
         });
     }, [props.socket]);
 
-
     useEffect(() => {
         setClass(props.isOnline);       
     }, [users])
-
 
     return (
         <div id="listOfUsersDiv" >
@@ -74,7 +72,7 @@ const ChatUsers = (props) => {
                 <ul id="listOfUsers">
                     {users.map(user => (
                         <li id={user.username} key={user.username} onClick={() => userClicked(user.username)}>
-                            {user.firstName} {user.lastName}
+                            {user.username}
                         </li>
                     ))}
                 </ul>

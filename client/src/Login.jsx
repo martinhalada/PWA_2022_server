@@ -2,45 +2,44 @@ import React, { useState, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { UserContext } from "./UserContext";
+import "./styles.css";
 
 export const Login = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState("");
-    const [response, setResponse] = useState("");
     const [message, setMessage] = useState("");
-    const [userContext, setUserContext] = useContext(UserContext)
-    const [error, setError] = useState("");
+    const [userContext, setUserContext] = useContext(UserContext);
 
     const submitForm = function (e) {
         e.preventDefault();
 
-        fetch(process.env.REACT_APP_API_ENDPOINT + "/login", {
+        fetch(process.env.REACT_APP_API_ENDPOINT + "/user/login", {
             method: "POST",
             withCredentials: true,
             credentials: "include",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: email, password }),
+            body: JSON.stringify({ username: email, password: password }),
         })
             .then(async (response) => {
                 if (!response.ok) {
                     if (response.status === 400) {
-                        setError("Please fill all the fields correctly!");
+                        setMessage("Please fill all the fields correctly!");
                     } else if (response.status === 401) {
-                        setError("Invalid email and password combination.");
+                        setMessage("Invalid email and password combination.");
                     } else {
-                        setError("error");
+                        setMessage("error");
                     }
                 } else {
                     const data = await response.json();
+                    setMessage(data.message);
                     setUserContext((oldValues) => {
                         return { ...oldValues, token: data.token };
                     });
                 }
             })
             .catch((error) => {
-                setError("error");
+                setMessage("error");
             });
-
 
         document.getElementById("login_form").reset();
     }

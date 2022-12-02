@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { UserContext } from "./UserContext"
-import Loader from "./Loader"
 import ChatUsers from "./ChatUsers"
 import ChatChats from "./ChatChats"
 import { FaUsers, FaComments } from 'react-icons/fa';
@@ -21,16 +20,14 @@ export const Chat = () => {
             socket.emit("isOnline", {
                 currentUser: userContext.details.username
             });
-            //socket.on()
         }
     }, [userContext.details]);
 
     const fetchUserDetails = useCallback(() => {
-        fetch(process.env.REACT_APP_API_ENDPOINT + "/me", {
+        fetch(process.env.REACT_APP_API_ENDPOINT + "/user/me", {
             method: "GET",
             withCredentials: true,
             credentials: "include",
-            // Pass authentication token as bearer token in header
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userContext.token}`,
@@ -58,14 +55,13 @@ export const Chat = () => {
     }, [setUserContext, userContext.token])
 
     useEffect(() => {
-        // fetch only when user details are not present
         if (!userContext.details) {
             fetchUserDetails()
         }
     }, [userContext.details, fetchUserDetails])
 
     const logoutHandler = () => {
-        fetch(process.env.REACT_APP_API_ENDPOINT + "/logout", {
+        fetch(process.env.REACT_APP_API_ENDPOINT + "/user/logout", {
             withCredentials: true,
             credentials: "include",
             headers: {
@@ -110,13 +106,12 @@ export const Chat = () => {
     return userContext.details === null ? (
         "Error Loading User details"
     ) : !userContext.details ? (
-        <Loader />
+        <div></div>
     ) : (
-
         <div id="main_div">
             <div id="main_options">
                 <h1>Chat</h1>
-                <h3>Přihlášený uživatel: {userContext.details.firstName} {userContext.details.lastName}</h3>
+                <h3>Přihlášený uživatel: {userContext.details.username}</h3>
                 <button id="logout_btn" onClick={logoutHandler} className="btn btn-primary">Odhlásit se</button>
             </div>
             <div id="options">
@@ -140,10 +135,7 @@ export const Chat = () => {
                 {messagesOrGroup === "group" && (
                     <ChatGroupChats username={userContext.details.username} />
                 )}
-
             </div>
-
-
         </div>
     )
 }

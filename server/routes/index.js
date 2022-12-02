@@ -2,23 +2,9 @@ const express = require('express');
 const router = express.Router();
 const chatController = require("../controllers/chatController"); 
 
-router.get("/", function(req,res){
-    res.redirect("/index");
-});
-
-router.get("/allUsers/:currentUser", chatController.getAllUsers);
-router.post("/createChatRoom", chatController.createChat);
-router.get("/allChats/:currentUser", chatController.getAllChats);
-router.get("/chat/:id", chatController.getAllMessages);
-router.post("/groupChat", chatController.createGroupChat);
-
-router.get("/index", chatController.getMainPage);
-
-function checkAuthenticated(req,res,next){
-    if(req.isAuthenticated()){
-        return next()
-    }
-    res.redirect("/login")
-}
+router.post("/chat/createChatRoom", chatController.createChat);
+router.get("/chat/allChats/:currentUser", chatController.getAllChats);
+router.get("/chat/getChat/:id", chatController.getAllMessages);
+router.post("/chat/groupChat", chatController.createGroupChat);
 
 module.exports = router;

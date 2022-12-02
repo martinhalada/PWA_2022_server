@@ -95,3 +95,7 @@ input[type="text"] {
 input[type="text"]:focus {
     color: #333;
 }
+
+#login_div, #register_div * {
+    margin: 2px;
+}

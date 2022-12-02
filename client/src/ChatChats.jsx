@@ -7,7 +7,7 @@ const ChatChats = (props) => {
 
     useEffect(() => {
         const fetchData = () => {
-            fetch(process.env.REACT_APP_API_ENDPOINT + "/allChats/" + props.username, {
+            fetch(process.env.REACT_APP_API_ENDPOINT + "/chat/allChats/" + props.username, {
                 method: "GET",
                 withCredentials: true,
                 credentials: "include",
@@ -39,9 +39,17 @@ const ChatChats = (props) => {
                             {chat.users.length === 2 && chat.users[0] !== props.username && (
                                 chat.users[0]
                             )}
-                            {chat.users.length > 2 && chat.users[0] !== props.username && (
-                                "groupChat"
-                            )}
+                            {(function() {
+                                if (chat.users.length > 2){
+                                    let disp = ""
+                                    for (let user of chat.users){
+                                        disp += user + ", "
+                                    }
+                                    disp = disp.substring(0, disp.lastIndexOf(","))
+                                    return disp
+                                }
+                            })()}
+                            
                         </li>
                     ))}
                 </ul>

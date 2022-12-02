@@ -5,13 +5,11 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 const ChatMessages = (props) => {
     const [messages, setMessages] = useState([]);
     const [currentMessage, setCurrentMessage] = useState("");
-    //const [currentChat, setCurrentChat] = useState(props.chatId);
     const [isUserTyping, setIsUserTyping] = useState(false);
 
     useEffect(() => {
-        //setCurrentChat(props.chatId);
         const fetchData = () => {
-            fetch(process.env.REACT_APP_API_ENDPOINT + "/chat/" + props.chatId, {
+            fetch(process.env.REACT_APP_API_ENDPOINT + "/chat/getChat/" + props.chatId, {
                 method: "GET",
                 withCredentials: true,
                 credentials: "include",

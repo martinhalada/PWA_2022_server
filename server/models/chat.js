@@ -1,4 +1,3 @@
-const { ObjectId } = require("bson");
 const mongoose = require("mongoose");
 
 let ChatRoomSchema = new mongoose.Schema({

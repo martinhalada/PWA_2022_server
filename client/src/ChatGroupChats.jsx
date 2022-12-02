@@ -9,7 +9,7 @@ const ChatGroupChats = (props) => {
 
     useEffect(() => {
         const fetchData = () => {
-            fetch(process.env.REACT_APP_API_ENDPOINT + "/allUsers/" + props.username, {
+            fetch(process.env.REACT_APP_API_ENDPOINT + "/user/allUsers/" + props.username, {
                 method: "GET",
                 withCredentials: true,
                 credentials: "include",
@@ -39,7 +39,7 @@ const ChatGroupChats = (props) => {
             return;
         }
 
-        fetch(process.env.REACT_APP_API_ENDPOINT + "/groupChat", {
+        fetch(process.env.REACT_APP_API_ENDPOINT + "/chat/groupChat", {
             method: "POST",
             withCredentials: true,
             credentials: "include",
@@ -56,7 +56,7 @@ const ChatGroupChats = (props) => {
             {users.length > 0 && (
                 <div id="selectUsers">
                     <form id="groupChatForm" onSubmit={handleSubmit}>
-                        <Select mode="multiple" onChange={(value) => handleChange(value)} placeholder="Vyber alespoň tři uživatele" style={{ width: 320 }}>
+                        <Select mode="multiple" onChange={(value) => handleChange(value)} placeholder="Vyber alespoň dva uživatele" style={{ width: 320 }}>
                             {users.map(user => (
                                 <Select.Option key={user.username} value={user.username}>{user.username}</Select.Option>
                             ))}

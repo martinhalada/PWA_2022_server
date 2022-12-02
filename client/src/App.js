@@ -3,7 +3,6 @@ import { UserContext } from "./UserContext"
 import { Login } from "./Login";
 import { Register } from "./Register";
 import { Chat } from "./Chat";
-import  Loader  from "./Loader";
 import "./styles.css";
 
 function App() {
@@ -15,7 +14,7 @@ function App() {
     }
 
     const verifyUser = useCallback(() => {
-        fetch(process.env.REACT_APP_API_ENDPOINT +"/refreshToken", {
+        fetch(process.env.REACT_APP_API_ENDPOINT +"/user/refreshToken", {
             method: "POST",
             withCredentials: true,
             credentials: "include",
@@ -40,12 +39,9 @@ function App() {
         verifyUser()
     }, [verifyUser])
 
-    /**
-     * Sync logout across tabs
-     */
+    // Sync logout across tabs
     const syncLogout = useCallback(event => {
         if (event.key === "logout") {
-            // If using react-router-dom, you may call history.push("/")
             window.location.reload()
         }
     }, [])
@@ -66,7 +62,11 @@ function App() {
     ) : userContext.token ? (
         <Chat />
     ) : (
-        <Loader />
+        <div id="login_register_div">
+            {
+                activeForm === "login" ? <Login switchForm={toggle_login_register} /> : <Register switchForm={toggle_login_register} />
+            }
+        </div>
     )
 }
 

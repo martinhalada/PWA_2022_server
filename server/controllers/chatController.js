@@ -9,17 +9,6 @@ exports.getAllUsers = async function(req, res, next){
     return res.send({allUsers: allUsers});
 };
 
-exports.getMainPage = async function(req, res, next){
-    const allUsers = await User.find({ username: { $ne: xss(req.user.username) } });
-    const allChats = await ChatRoom.find({ users: {$all: [req.user.username]}});
-    return res.send({ allUsers: allUsers, 
-                                    allChats: allChats,
-                                    currentUser: req.user.username, 
-                                    currentUserId: req.user.id,
-                                    messagesDivAttr: false });
-
-};
-
 let currentChatRoomId;
 exports.createChat = async function(req, res, next){
     let currentUser = xss(req.body.currentUser);
@@ -31,7 +20,7 @@ exports.createChat = async function(req, res, next){
             id: currentChatRoomId,
             users: [currentUser, secondUser]
         };
-        let newChatRoom = ChatRoom(newChatRoomItem).save(function(err,data){
+        ChatRoom(newChatRoomItem).save(function(err,data){
             if(err) return res.send({message: "Chyba databáze"});
         });
     } else {
@@ -52,21 +41,19 @@ exports.getAllMessages = async function(req, res, next){
 };
 
 exports.saveNewMessage = function(message, user, chatRoom){
-    console.log(chatRoom, message, user);
     let newItem = {
         sender: user,
         chat: chatRoom,
         message:  message,
         time: Date.now()
     };
-    let newMessage = Message(newItem).save(function(err,data){
+    Message(newItem).save(function(err,data){
         if(err) console.log("Chyba databáze");
     });
 };
 
 exports.createGroupChat = async function(req, res, next){
     let selectedUsers = xss(req.body.users).split(",");
-
     const chatRoomId = await ChatRoom.find({ users : {$all: selectedUsers, $size: selectedUsers.length}});
     if (chatRoomId.length === 0){
         let currentChatRoomId = shortid.generate()
@@ -74,7 +61,7 @@ exports.createGroupChat = async function(req, res, next){
             id: currentChatRoomId,
             users: selectedUsers
         };
-        let newChatRoom = ChatRoom(newChatRoomItem).save(function(err,data){
+        ChatRoom(newChatRoomItem).save(function(err,data){
             if(err) return res.send({message: "Chyba databáze"});
         });    
     }

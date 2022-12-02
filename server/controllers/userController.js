@@ -1,12 +1,10 @@
 const User = require("../models/user");
-const passport = require("passport");
 const bcrypt = require("bcrypt");
 const xss = require("xss");
 const jwt = require("jsonwebtoken")
 
-const { getToken, COOKIE_OPTIONS, getRefreshToken, verifyUser } = require("../authenticate");
+const { getToken, COOKIE_OPTIONS, getRefreshToken } = require("../authenticate");
 
-/*
 exports.postRegister = async function (req, res) {
     User.findOne({ email: xss(req.body.email) }, async function (err, data) {
         if (data) {
@@ -14,11 +12,8 @@ exports.postRegister = async function (req, res) {
         }
         try {
             const hashedPassword = await bcrypt.hash(xss(req.body.password), 10);
-            const token = getToken({ _id: user._id })
-            const refreshToken = getRefreshToken({ _id: user._id })
             let newUser = {
-                username: xss(req.body.name),
-                id: Date.now().toString(),
+                username: xss(req.body.username),
                 email: xss(req.body.email),
                 password: hashedPassword
             }
@@ -26,32 +21,10 @@ exports.postRegister = async function (req, res) {
                 if (err) {
                     return res.send({ message: "Chyba databáze." });
                 }
-                return res.send({ message: "Registrace proběhla úspěšně." });
-            });
-        } catch {
-            res.send({ message: "Chyba." });
-        }
-    });
-};
-*/
-
-exports.postRegister = function (req, res, next) {
-    User.register(
-        new User({ username: req.body.username }),
-        xss(req.body.password),
-        (err, user) => {
-            if (err) {
-                console.log(err)
-                res.statusCode = 500;
-                res.send({ message: err });
-            } else {
-                console.log(user)
-                user.firstName = req.body.firstName;
-                user.lastName = req.body.lastName || "";
-                const token = getToken({ _id: user._id })
-                const refreshToken = getRefreshToken({ _id: user._id })
-                user.refreshToken.push({ refreshToken });
-                user.save((err, user) => {
+                const token = getToken({ _id: data._id })
+                const refreshToken = getRefreshToken({ _id: data._id })
+                data.refreshToken.push({ refreshToken });
+                data.save((err, user) => {
                     if (err) {
                         res.statusCode = 500
                         res.send({ message: err });
@@ -60,10 +33,12 @@ exports.postRegister = function (req, res, next) {
                         res.send({ message: "Registrace proběhla úspěšně.", token });
                     }
                 })
-            }
+            });
+        } catch {
+            res.send({ message: "Chyba." });
         }
-    )
-}
+    });
+};
 
 exports.refreshToken = function (req, res, next) {
     const { signedCookies = {} } = req
@@ -116,6 +91,26 @@ exports.refreshToken = function (req, res, next) {
     }
 };
 
+exports.login = function (req, res, next) {
+    const token = getToken({ _id: xss(req.user._id) });
+    const refreshToken = getRefreshToken({ _id: xss(req.user._id) });
+    User.findById(xss(req.user._id)).then(
+        (user) => {
+            user.refreshToken.push({ refreshToken });
+            user.save((err, user) => {
+                if (err) {
+                    res.statusCode = 500;
+                    res.send(err);
+                } else {
+                    res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
+                    res.send({ success: true, token });
+                }
+            });
+        },
+        (err) => next(err)
+    );
+};
+
 exports.me = function (req, res, next) {
     res.send(req.user);
 };
@@ -123,7 +118,7 @@ exports.me = function (req, res, next) {
 exports.logout = function (req, res, next) {
     const { signedCookies = {} } = req
     const { refreshToken } = signedCookies
-    User.findById(req.user._id).then(
+    User.findById(xss(req.user._id)).then(
         user => {
             const tokenIndex = user.refreshToken.findIndex(
                 item => item.refreshToken === refreshToken

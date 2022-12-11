@@ -76,7 +76,7 @@ const app = express();
 const http = require('http').Server(app);
 let io = require("socket.io")(http, {
     cors: {
-        origin: "http://localhost:3000"
+        origin: process.env.WHITELISTED_DOMAINS
     }
 });
 

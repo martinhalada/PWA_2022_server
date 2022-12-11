@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node ./server/app.js",
     "test": "node ./server/app.js",
     "dev": "nodemon --exec \"npm test\""
   },

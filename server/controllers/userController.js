@@ -127,7 +127,7 @@ exports.logout = function (req, res, next) {
             if (tokenIndex !== -1) {
                 user.refreshToken.id(user.refreshToken[tokenIndex]._id).remove()
             }
-
+            
             user.save((err, user) => {
                 if (err) {
                     res.statusCode = 500

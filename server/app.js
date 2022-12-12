@@ -115,11 +115,18 @@ io.on("connection", (socket) => {
 
     socket.on("chat", function (data) {
         chatController.saveNewMessage(data.message, data.send_user, data.chatRoom);
-        io.sockets.to(data.chatRoom).emit("chat", data);
+        //io.sockets.to(data.chatRoom).emit("chat", data);
+        socket.broadcast.to(data.chatRoom).emit("chat", data);
     });
 
     socket.on("typing", function (data) {
         socket.broadcast.to(data.chatRoom).emit("typing", data);
+    });
+
+    socket.on('logout', function (data) {
+        console.log('user disconnected: ' + data.currentUser);
+        delete users[socket.id];
+        io.sockets.emit("isOnline", users);
     });
 
     socket.on('disconnect', function (data) {

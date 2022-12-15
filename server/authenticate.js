@@ -5,7 +5,7 @@ exports.COOKIE_OPTIONS = {
     httpOnly: false,
     signed: true,
     maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
-    sameSite: "Lax"
+    sameSite: "none"
 };
 
 exports.getToken = user => {

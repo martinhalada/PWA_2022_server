@@ -3,10 +3,11 @@ const jwt = require("jsonwebtoken");
 
 exports.COOKIE_OPTIONS = {
     domain: process.env.WHITELISTED_DOMAINS,
-    //httpOnly: false,
-    //signed: true,
+    httpOnly: true,
+    signed: true,
     maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
-    //sameSite: "none"
+    sameSite: "none",
+    secure: true
 };
 
 exports.getToken = user => {

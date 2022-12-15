@@ -93,7 +93,7 @@ const corsOptions = {
             callback(new Error("Not allowed by CORS"))
         }
     },
-
+    exposedHeaders: ["set-cookie"],
     credentials: true,
 }
 app.use(cors(corsOptions))

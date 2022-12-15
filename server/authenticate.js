@@ -2,7 +2,7 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
 exports.COOKIE_OPTIONS = {
-    domain: process.env.WHITELISTED_DOMAINS,
+    domain: process.env.WHITELISTED_DOMAINS_PREFIX,
     httpOnly: true,
     signed: true,
     maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,

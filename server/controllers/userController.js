@@ -29,7 +29,8 @@ exports.postRegister = async function (req, res) {
                         res.statusCode = 500
                         res.send({ message: err });
                     } else {
-                        res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+                        //res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+                        res.set('Authorization', 'Bearer ' + refreshToken);
                         res.send({ message: "Registrace proběhla úspěšně.", token });
                     }
                 })
@@ -69,7 +70,8 @@ exports.refreshToken = function (req, res, next) {
                                     res.statusCode = 500
                                     res.send(err)
                                 } else {
-                                    res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
+                                    //res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
+                                    res.set('Authorization', 'Bearer ' + newRefreshToken);
                                     res.send({ success: true, token })
                                 }
                             })
@@ -102,7 +104,8 @@ exports.login = function (req, res, next) {
                     res.statusCode = 500;
                     res.send(err);
                 } else {
-                    res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
+                    //res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
+                    res.set('Authorization', 'Bearer ' + refreshToken);
                     res.send({ success: true, token });
                 }
             });
@@ -133,7 +136,8 @@ exports.logout = function (req, res, next) {
                     res.statusCode = 500
                     res.send(err)
                 } else {
-                    res.clearCookie("refreshToken", COOKIE_OPTIONS)
+                    //res.clearCookie("refreshToken", COOKIE_OPTIONS)
+                    res.set('Authorization', '');
                     res.send({ success: true })
                 }
             })

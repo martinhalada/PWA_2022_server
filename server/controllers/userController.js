@@ -44,7 +44,7 @@ exports.postRegister = async function (req, res) {
 exports.refreshToken = function (req, res, next) {
     //const { signedCookies = {} } = req
     //const { refreshToken } = signedCookies
-    const refreshToken = req.headers.get('Authorization');
+    const refreshToken = req.headers.authorization.split(' ')[1];
 
     if (refreshToken) {
         try {

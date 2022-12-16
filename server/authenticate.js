@@ -2,12 +2,12 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
 exports.COOKIE_OPTIONS = {
-    domain: process.env.WHITELISTED_DOMAINS_PREFIX,
-    httpOnly: true,
+    //httpOnly: true,
     signed: true,
+    domain: "onrender.com",
     maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
     sameSite: "none",
-    secure: true
+    //secure: true
 };
 
 exports.getToken = user => {

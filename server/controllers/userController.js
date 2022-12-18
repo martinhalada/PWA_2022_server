@@ -21,7 +21,7 @@ exports.postRegister = async function (req, res) {
                 if (err) {
                     return res.send({ message: "Chyba databáze." });
                 }
-                const token = getToken({ _id: data._id })
+                //const token = getToken({ _id: data._id })
                 const refreshToken = getRefreshToken({ _id: data._id })
                 data.refreshToken.push({ refreshToken });
                 data.save((err, user) => {
@@ -31,7 +31,7 @@ exports.postRegister = async function (req, res) {
                     } else {
                         //res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
                         res.set('Authorization', 'Bearer ' + refreshToken);
-                        res.send({ message: "Registrace proběhla úspěšně.", token });
+                        res.send({ message: "Registrace proběhla úspěšně.", token: refreshToken });
                     }
                 })
             });
@@ -44,11 +44,16 @@ exports.postRegister = async function (req, res) {
 exports.refreshToken = function (req, res, next) {
     //const { signedCookies = {} } = req
     //const { refreshToken } = signedCookies
-    const refreshToken = req.headers.authorization.split(' ')[1];
+    const auth = req.headers.authorization;
+    let refreshToken = null;
+    if (auth) {
+        refreshToken = req.headers.authorization.split(' ')[1];
+    }
 
     if (refreshToken) {
         try {
             const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+            console.log(payload)
             const userId = payload._id
             User.findOne({ _id: userId }).then(
                 user => {
@@ -73,7 +78,7 @@ exports.refreshToken = function (req, res, next) {
                                 } else {
                                     //res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
                                     res.set('Authorization', 'Bearer ' + newRefreshToken);
-                                    res.send({ success: true, token })
+                                    res.send({ success: true, token: newRefreshToken })
                                 }
                             })
                         }
@@ -95,7 +100,7 @@ exports.refreshToken = function (req, res, next) {
 };
 
 exports.login = function (req, res, next) {
-    const token = getToken({ _id: xss(req.user._id) });
+    //const token = getToken({ _id: xss(req.user._id) });
     const refreshToken = getRefreshToken({ _id: xss(req.user._id) });
     User.findById(xss(req.user._id)).then(
         (user) => {
@@ -107,7 +112,7 @@ exports.login = function (req, res, next) {
                 } else {
                     //res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
                     res.set('Authorization', 'Bearer ' + refreshToken);
-                    res.send({ success: true, token });
+                    res.send({ success: true, token: refreshToken });
                 }
             });
         },

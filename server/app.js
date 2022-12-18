@@ -27,23 +27,6 @@ connect.then(db => {
     console.log(err);
 });
 
-const opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = process.env.JWT_SECRET;
-
-passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
-    User.findOne({ _id: jwt_payload._id }, function (err, user) {
-        if (err) {
-            return done(err, false);
-        }
-        if (user) {
-            return done(null, user);
-        } else {
-            return done(null, false);
-        }
-    });
-}));
-
 passport.use(new LocalStrategy({ username: "email" },
     function (email, password, done) {
         User.findOne({ email: xss(email) }, async function (err, user) {
@@ -72,6 +55,23 @@ passport.deserializeUser((id, done) => {
 
 require("./authenticate");
 
+const opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
+
+passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ _id: jwt_payload._id }, function (err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    });
+}));
+
 const app = express();
 const http = require('http').Server(app);
 let io = require("socket.io")(http, {
@@ -93,6 +93,7 @@ const corsOptions = {
             callback(new Error("Not allowed by CORS"))
         }
     },
+    exposedHeaders: ["Authorization"],
     credentials: true,
 }
 app.use(cors(corsOptions))

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 exports.COOKIE_OPTIONS = {
     //httpOnly: true,
     signed: true,
-    domain: "onrender.com",
+    //domain: "onrender.com",
     maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
     sameSite: "none",
     //secure: true

@@ -148,8 +148,12 @@ app.use(passport.initialize());
 app.use("/", userRouter);
 app.use("/", indexRouter);
 
-const server = http.listen(process.env.PORT || 3001, function () {
-    const port = server.address().port;
+if (process.env.NODE_ENV !== "test"){
+    const server = http.listen(process.env.PORT || 3001, function () {
+        const port = server.address().port;
 
-    console.log("App started at port:", port);
-});
+        console.log("App started at port:", port);
+    });
+}
+
+module.exports = app
